@@ -1,505 +1,818 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>همیار معلم - دستیار هوشمند تدریس</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%); color: #1e293b; min-height: 100vh; }
-        .container { max-width: 500px; margin: auto; padding: 20px 15px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>همیار معلم</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --blue-light: #dbeafe;
+  --amber: #f59e0b;
+  --amber-dark: #d97706;
+  --green: #10b981;
+  --surface: #ffffff;
+  --bg: #f1f5f9;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
 
-        .landing-page { text-align: center; }
-        .landing-logo { font-size: 58px; margin: 25px 0 10px; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .landing-title { font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
-        .landing-subtitle { font-size: 17px; color: #475569; margin-bottom: 25px; }
-        .feature-box { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 16px; padding: 18px; margin: 12px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.5); text-align: right; }
-        .feature-box h3 { color: #2563eb; font-size: 18px; display: flex; align-items: center; gap: 8px; }
-        .feature-box p { color: #334155; font-size: 14px; margin-top: 8px; }
-        .output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .output-item { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 12px; padding: 12px; font-size: 14px; font-weight: bold; color: #1e3a8a; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .cta-button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 16px 32px; font-size: 20px; font-weight: bold; border-radius: 16px; cursor: pointer; margin: 25px 0 15px; width: 100%; box-shadow: 0 10px 20px rgba(37,99,235,0.3); transition: 0.3s; }
-        .cta-button:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); transform: translateY(-2px); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Vazirmatn', Tahoma, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.container { max-width: 520px; margin: auto; padding: 20px 16px 100px; }
 
-        .tool-page { display: none; }
-        h1 { text-align: center; font-size: 24px; color: #1e293b; margin-bottom: 15px; }
-        label { display: block; margin: 14px 0 6px; font-weight: bold; color: #334155; font-size: 15px; }
-        select, input, button { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 16px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); }
-        button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; cursor: pointer; font-weight: bold; box-shadow: 0 4px 12px rgba(37,99,235,0.25); transition: 0.2s; }
-        button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.35); }
-        button:disabled { background: #94a3b8; box-shadow: none; }
-        .output-section { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 16px; padding: 15px; margin: 15px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.7); }
-        .tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-        .tab { padding: 10px 16px; background: rgba(255,255,255,0.8); border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: #475569; transition: 0.2s; }
-        .tab.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; font-weight: bold; }
-        .content { display: none; }
-        .content.active { display: block; }
-        .highlight { background: #fef9c3; padding: 10px; border-radius: 12px; margin: 10px 0; }
-        .step-card { background: #f8fafc; border-radius: 12px; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; }
-        .game-card { background: #ffffff; border-radius: 16px; padding: 18px; margin: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-right: 5px solid #2563eb; }
-        .game-card h3 { color: #1e3a8a; }
-        .phase-card { border-right: 4px solid #2563eb; padding: 10px; margin: 10px 0; background: #f1f5f9; border-radius: 8px; }
-        .comparison-table { width: 100%; border-collapse: collapse; margin: 10px 0; background: white; border-radius: 12px; overflow: hidden; }
-        .comparison-table th { background: #2563eb; color: white; padding: 10px; }
-        .comparison-table td { padding: 10px; text-align: center; }
-        .worksheet-card { background: white; border-radius: 16px; padding: 20px; margin: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .worksheet-card h3 { text-align: center; padding: 12px; border-radius: 12px; margin-top: 0; color: white; }
-        .question { margin: 18px 0; padding: 12px; border-bottom: 1px dashed #cbd5e1; }
-        .fill-blank { display: inline-block; min-width: 100px; border-bottom: 2px dashed #64748b; }
-        .options { list-style: none; padding: 0; }
-        .options li { margin: 6px 0; }
-        .options li::before { content: "○   "; font-size: 18px; color: #2563eb; }
-        .self-assessment { background: #e0f2fe; padding: 15px; border-radius: 12px; margin: 15px 0; }
-        .checklist { background: #fce7f3; padding: 15px; border-radius: 12px; margin: 15px 0; }
-        .checklist-item { margin: 8px 0; }
-        .checklist-item::before { content: "☐   "; font-size: 18px; color: #2563eb; }
-        .designer { text-align: center; margin: 25px 0 10px; color: #64748b; font-size: 13px; }
-        .designer span { font-weight: bold; color: #1e3a8a; }
-        .status-msg { color: #f59e0b; font-weight: bold; }
-        .answer-box { background: #dcfce7; padding: 8px; border-radius: 8px; margin-top: 8px; }
-        .sentence-box { background: #f3e8ff; padding: 8px; border-radius: 8px; margin: 5px 0; }
-        .script-box { background: #f1f5f9; padding: 12px; border-radius: 12px; }
-        .back-button { background: #64748b; }
+/* ── LANDING ── */
+#landingPage { animation: fadeIn .4s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-        .loading-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
-        .hourglass { font-size: 48px; animation: spin 2s linear infinite; }
-        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+.hero { text-align: center; padding: 32px 0 24px; }
+.hero-icon { font-size: 72px; display: block; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.hero-title { font-size: 34px; font-weight: 900; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 8px 0 6px; }
+.hero-sub { color: var(--text-muted); font-size: 15px; font-weight: 500; }
 
-        .chat-fab-container { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; align-items: center; gap: 5px; z-index: 999; }
-        .chat-fab { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(245,158,11,0.4); cursor: pointer; border: none; transition: 0.3s; }
-        .chat-fab:hover { transform: scale(1.08); }
-        .chat-fab-label { font-size: 12px; color: #334155; font-weight: bold; background: white; padding: 4px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .chat-panel { position: fixed; bottom: 100px; left: 20px; width: 330px; max-width: calc(100vw - 40px); height: 420px; background: white; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
-        .chat-panel.open { display: flex; }
-        .chat-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 14px; font-weight: bold; display: flex; justify-content: space-between; }
-        .chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
-        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .chat-bubble { max-width: 80%; padding: 10px 16px; border-radius: 18px; font-size: 14px; }
-        .chat-bubble.user { align-self: flex-start; background: #f1f5f9; }
-        .chat-bubble.assistant { align-self: flex-end; background: #2563eb; color: white; }
-        .chat-input-area { display: flex; padding: 10px; gap: 8px; border-top: 1px solid #e2e8f0; }
-        .chat-input-area input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #cbd5e1; }
-        .chat-input-area button { width: auto; padding: 12px 18px; border-radius: 20px; background: #f59e0b; color: white; }
-        @media print { body { background: white; } .container { max-width: 100%; } .tabs, button, label, select, input, .designer, .status-msg, .back-button, .loading-container, .chat-fab-container, .chat-panel { display: none; } .content { display: block !important; } }
-    </style>
+.badge-row { display: flex; gap: 8px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
+.badge { background: var(--blue-light); color: var(--blue-dark); font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 99px; }
+.badge.green { background: #d1fae5; color: #065f46; }
+.badge.amber { background: #fef3c7; color: #92400e; }
+
+.card { background: var(--surface); border-radius: var(--radius); padding: 18px; margin: 12px 0; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.card h3 { font-size: 16px; font-weight: 700; color: var(--blue-dark); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.card p { color: #334155; font-size: 14px; line-height: 1.8; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0; }
+.chip { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 12px; padding: 12px 10px; font-size: 13px; font-weight: 700; color: #1e40af; text-align: center; border: 1px solid #bfdbfe; }
+
+.cta { display: block; width: 100%; background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: white; border: none; padding: 18px; font-size: 20px; font-weight: 800; border-radius: var(--radius); cursor: pointer; margin: 20px 0 10px; box-shadow: 0 8px 24px rgba(37,99,235,.35); transition: .25s; font-family: inherit; letter-spacing: .3px; }
+.cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(37,99,235,.4); }
+
+/* ── TOOL PAGE ── */
+#toolPage { display: none; animation: fadeIn .4s ease; }
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); width: 42px; height: 42px; border-radius: 12px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: .2s; }
+.back-btn:hover { background: var(--bg); }
+.page-title { font-size: 22px; font-weight: 800; color: var(--text); }
+
+.form-label { display: block; margin: 14px 0 6px; font-weight: 700; font-size: 14px; color: #334155; }
+.form-control { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); font-size: 15px; font-family: inherit; background: var(--surface); color: var(--text); transition: border-color .2s; appearance: none; }
+.form-control:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+select.form-control { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 14px center; }
+
+.gen-btn { display: block; width: 100%; background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 800; border-radius: 14px; cursor: pointer; margin: 16px 0 0; font-family: inherit; transition: .2s; box-shadow: 0 6px 18px rgba(37,99,235,.3); }
+.gen-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(37,99,235,.4); }
+.gen-btn:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* ── LOADING ── */
+.loading-wrap { text-align: center; padding: 40px 0; }
+.spinner { width: 52px; height: 52px; border: 4px solid var(--blue-light); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--blue); font-weight: 700; font-size: 15px; }
+.loading-sub { color: var(--text-muted); font-size: 13px; margin-top: 6px; }
+
+/* ── OUTPUT ── */
+.output-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; margin: 16px 0; }
+.tabs-bar { display: flex; overflow-x: auto; background: #f8fafc; border-bottom: 1px solid var(--border); }
+.tabs-bar::-webkit-scrollbar { height: 3px; }
+.tabs-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: none; background: none; font-family: inherit; border-bottom: 3px solid transparent; transition: .2s; flex-shrink: 0; }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); background: white; }
+.tab-content { padding: 16px; display: none; }
+.tab-content.active { display: block; }
+
+/* section styles inside output */
+.section-title { font-size: 16px; font-weight: 800; color: var(--blue-dark); margin: 16px 0 8px; display: flex; align-items: center; gap: 6px; }
+.section-title:first-child { margin-top: 0; }
+.highlight-box { background: #fef9c3; border-right: 4px solid #f59e0b; padding: 12px 14px; border-radius: 10px; margin: 10px 0; font-size: 14px; }
+.step-row { background: var(--bg); border-radius: 10px; padding: 12px 14px; margin: 8px 0; font-size: 14px; display: flex; gap: 10px; align-items: flex-start; }
+.step-num { background: var(--blue); color: white; width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.game-card-out { background: white; border-right: 4px solid var(--blue); border-radius: 12px; padding: 14px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+.game-card-out h4 { color: var(--blue-dark); font-size: 15px; margin-bottom: 6px; }
+.worksheet-wrap { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.05); margin: 10px 0; }
+.ws-title { text-align: center; background: var(--blue); color: white; padding: 10px; border-radius: 10px; margin-bottom: 14px; font-size: 15px; font-weight: 700; }
+.question-block { padding: 12px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
+.question-block:last-child { border-bottom: none; }
+.blank { display: inline-block; min-width: 80px; border-bottom: 2px dashed #64748b; }
+.options-list { list-style: none; margin-top: 8px; }
+.options-list li { margin: 5px 0; font-size: 13px; color: #334155; }
+.options-list li::before { content: "○  "; color: var(--blue); font-size: 15px; }
+.eval-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 14px; margin: 10px 0; }
+.eval-box h4 { color: #166534; font-size: 14px; margin-bottom: 8px; }
+.checklist-item { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; margin: 6px 0; }
+.checklist-item::before { content: "☐"; color: var(--blue); flex-shrink: 0; }
+.tag { display: inline-block; background: var(--blue-light); color: var(--blue-dark); font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; margin: 2px; }
+.tag.green { background: #d1fae5; color: #065f46; }
+.tag.amber { background: #fef3c7; color: #92400e; }
+.tag.red { background: #fee2e2; color: #991b1b; }
+
+/* action row */
+.action-row { display: flex; gap: 10px; margin-top: 16px; }
+.action-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: .2s; }
+.action-btn:hover { border-color: var(--blue); color: var(--blue); }
+.action-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
+
+/* ── CHAT ── */
+.chat-fab-wrap { position: fixed; bottom: 20px; left: 16px; z-index: 999; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chat-fab-btn { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--amber), var(--amber-dark)); color: white; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(245,158,11,.4); transition: .25s; display: flex; align-items: center; justify-content: center; }
+.chat-fab-btn:hover { transform: scale(1.08); }
+.chat-fab-label { font-size: 11px; font-weight: 700; color: var(--text-muted); background: white; padding: 3px 10px; border-radius: 20px; box-shadow: var(--shadow); }
+
+.chat-panel { position: fixed; bottom: 94px; left: 16px; width: 340px; max-width: calc(100vw - 32px); height: 430px; background: white; border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,.16); z-index: 1000; display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
+.chat-panel.open { display: flex; animation: slideUp .25s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.chat-header-bar { background: linear-gradient(135deg, var(--amber), var(--amber-dark)); color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+.chat-header-bar span { font-weight: 800; font-size: 15px; }
+.chat-close-btn { background: none; border: none; color: white; font-size: 22px; cursor: pointer; line-height: 1; padding: 0; }
+.chat-msgs { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.msg { max-width: 82%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.6; }
+.msg.user { align-self: flex-start; background: #f1f5f9; color: var(--text); border-bottom-right-radius: 4px; }
+.msg.bot { align-self: flex-end; background: var(--blue); color: white; border-bottom-left-radius: 4px; }
+.msg.bot.thinking { background: #f8fafc; color: var(--text-muted); font-style: italic; border: 1px solid var(--border); }
+.chat-input-row { display: flex; padding: 10px 12px; gap: 8px; border-top: 1px solid var(--border); background: #fafafa; }
+.chat-input { flex: 1; padding: 11px 14px; border-radius: 14px; border: 1.5px solid var(--border); font-size: 14px; font-family: inherit; background: white; }
+.chat-input:focus { outline: none; border-color: var(--amber); }
+.chat-send-btn { padding: 11px 16px; border-radius: 14px; background: var(--amber); color: white; border: none; font-size: 18px; cursor: pointer; transition: .2s; }
+.chat-send-btn:hover { background: var(--amber-dark); }
+.chat-send-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+/* ── MISC ── */
+.footer-credit { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 24px; }
+.footer-credit b { color: var(--blue-dark); }
+
+@media print {
+  .chat-fab-wrap, .chat-panel, .gen-btn, .back-btn, .action-row, .tabs-bar, #landingPage .card:not(.output-card), label, select, input, .footer-credit { display: none !important; }
+  .tab-content { display: block !important; }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div id="landingPage" class="landing-page">
-            <div class="landing-logo">🧠</div>
-            <div class="landing-title">همیار معلم</div>
-            <div class="landing-subtitle">اولین دستیار هوشمند معلمان ابتدایی ایران</div>
-            <div class="feature-box"><h3>🤖 همیار معلم چیست؟</h3><p>یک سیستم هوشمند مبتنی بر هوش مصنوعی که تمام ابزارهای مورد نیاز یک معلم ابتدایی را <strong>تنها با یک کلیک</strong> تولید می‌کند. بدون نیاز به طراحی دستی، بدون جستجوی اینترنتی، و کاملاً منطبق بر کتاب‌های درسی ایران.</p></div>
-            <div class="feature-box"><h3>🎯 چه خروجی‌هایی تولید می‌کند؟</h3><div class="output-grid"><div class="output-item">📘 طرح درس کامل</div><div class="output-item">🎲 بازی‌های آموزشی</div><div class="output-item">📝 کاربرگ سطح‌بندی‌شده</div><div class="output-item">🌱 مهارت زندگی ادغام‌شده</div><div class="output-item">📋 ارزشیابی توصیفی</div><div class="output-item">🚨 حالت اضطراری تدریس</div><div class="output-item">👨‍🏫 مدیریت کلاس</div><div class="output-item">🖨️ خروجی قابل چاپ</div></div></div>
-            <div class="feature-box"><h3>🌟 چرا مهم است؟</h3><p>✅ <strong>صرفه‌جویی در زمان:</strong> از ۲ ساعت طراحی به ۱۰ ثانیه</p><p>✅ <strong>کاملاً منطبق بر کتاب‌های درسی:</strong> پایه اول تا ششم</p><p>✅ <strong>شخصی‌سازی‌شده:</strong> بر اساس استان، شهر یا روستای شما</p><p>✅ <strong>سه سطح دانش‌آموز:</strong> ضعیف، متوسط، قوی</p><p>✅ <strong>قابل استفاده در موبایل و کامپیوتر</strong></p><p>✅ <strong>مبتنی بر آخرین روش‌های تدریس نوین</strong></p></div>
-            <button class="cta-button" onclick="startTool()">🚀 شروع ساخت تدریس</button>
-            <div class="designer">طراحی شده توسط <span>افشار صوفی</span></div>
-        </div>
-        <div id="toolPage" class="tool-page">
-            <button class="back-button" onclick="goBack()">⬅️ بازگشت به صفحه اصلی</button>
-            <h1>🧠 همیار معلم</h1>
-            <label for="grade">پایه تحصیلی</label>
-            <select id="grade"><option value="1">اول</option><option value="2">دوم</option><option value="3">سوم</option><option value="4" selected>چهارم</option><option value="5">پنجم</option><option value="6">ششم</option></select>
-            <label for="subject">درس</label>
-            <select id="subject"><option value="فارسی">فارسی</option><option value="ریاضی">ریاضی</option><option value="علوم">علوم</option><option value="هدیه‌های آسمان">هدیه‌های آسمان</option><option value="مطالعات اجتماعی">مطالعات اجتماعی</option><option value="قرآن">قرآن</option></select>
-            <label for="lessonNo">شماره درس (مثلاً ۳)</label>
-            <input type="number" id="lessonNo" value="3" min="1">
-            <label for="city">شهر / روستا</label>
-            <input type="text" id="city" placeholder="مثال: کندوان">
-            <button id="generateBtn" onclick="generate()">✨ ساخت بسته کامل تدریس</button>
-            <div id="loadingArea" style="display:none;">
-                <div class="loading-container">
-                    <div class="hourglass">⏳</div>
-                    <p class="status-msg">در حال ساخت بسته کامل... لطفاً شکیبا باشید</p>
-                </div>
-            </div>
-            <div id="output" style="display:none;">
-                <div class="tabs">
-                    <div class="tab active" onclick="showTab('teaching')">طرح درس</div>
-                    <div class="tab" onclick="showTab('game')">بازی‌ها</div>
-                    <div class="tab" onclick="showTab('worksheet')">کاربرگ</div>
-                    <div class="tab" onclick="showTab('life')">مهارت زندگی</div>
-                    <div class="tab" onclick="showTab('eval')">ارزشیابی</div>
-                    <div class="tab" onclick="showTab('emergency')">حالت اضطراری</div>
-                    <div class="tab" onclick="showTab('classroom')">مدیریت کلاس</div>
-                </div>
-                <div id="teaching" class="content active output-section"></div>
-                <div id="game" class="content output-section"></div>
-                <div id="worksheet" class="content output-section"></div>
-                <div id="life" class="content output-section"></div>
-                <div id="eval" class="content output-section"></div>
-                <div id="emergency" class="content output-section"></div>
-                <div id="classroom" class="content output-section"></div>
-            </div>
-            <div class="designer">طراحی شده توسط <span>افشار صوفی</span></div>
-        </div>
+<div class="container">
+
+  <!-- LANDING -->
+  <div id="landingPage">
+    <div class="hero">
+      <span class="hero-icon">🧠</span>
+      <div class="hero-title">همیار معلم</div>
+      <div class="hero-sub">دستیار هوشمند معلمان ابتدایی ایران</div>
     </div>
 
-    <div class="chat-fab-container">
-        <button class="chat-fab" onclick="toggleChat()">💬</button>
-        <span class="chat-fab-label">پشتیبان معلم</span>
-    </div>
-    <div id="chatPanel" class="chat-panel">
-        <div class="chat-header"><span>🧑‍🏫 پشتیبان معلم</span><button class="chat-close" onclick="toggleChat()">✕</button></div>
-        <div id="chatMessages" class="chat-messages"><div class="chat-bubble assistant">سلام! من دستیار آموزشی شما هستم. هر سوالی دارید بپرسید.</div></div>
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" placeholder="سوال خود را بنویسید..." onkeydown="if(event.key==='Enter')sendMessage()">
-            <button onclick="sendMessage()">➤</button>
-        </div>
+    <div class="badge-row">
+      <span class="badge">پایه ۱ تا ۶</span>
+      <span class="badge green">✓ سریع و دقیق</span>
+      <span class="badge amber">۸ ابزار تخصصی</span>
     </div>
 
-    <script>
-        function startTool(){ document.getElementById('landingPage').style.display='none'; document.getElementById('toolPage').style.display='block'; }
-        function goBack(){ document.getElementById('toolPage').style.display='none'; document.getElementById('landingPage').style.display='block'; }
+    <div class="card">
+      <h3>🤖 همیار معلم چیست؟</h3>
+      <p>یک سیستم هوشمند مبتنی بر هوش مصنوعی که تمام ابزارهای مورد نیاز معلم ابتدایی را <strong>تنها با یک کلیک</strong> تولید می‌کند — کاملاً منطبق بر کتاب‌های درسی ایران.</p>
+    </div>
 
-        const API_KEY="aa-HPcQTOlTmipHPWPzNCXHRfzUCIVDGFRMSEbr5z0xWamy2nbs";
-        const safeArray=v=>Array.isArray(v)?v:[];
+    <div class="card">
+      <h3>🎯 خروجی‌های قابل تولید</h3>
+      <div class="grid-2">
+        <div class="chip">📘 طرح درس کامل</div>
+        <div class="chip">🎲 بازی‌های آموزشی</div>
+        <div class="chip">📝 کاربرگ سطح‌بندی‌شده</div>
+        <div class="chip">🌱 مهارت‌های زندگی</div>
+        <div class="chip">📋 ارزشیابی توصیفی</div>
+        <div class="chip">🚨 حالت اضطراری</div>
+        <div class="chip">👨‍🏫 مدیریت کلاس</div>
+        <div class="chip">🖨️ خروجی چاپی</div>
+      </div>
+    </div>
 
-        async function generate(){
-            const btn=document.getElementById('generateBtn');
-            const la=document.getElementById('loadingArea');
-            const out=document.getElementById('output');
-            out.style.display='none'; la.style.display='block'; btn.disabled=true; btn.textContent='⏳ در حال ساخت...';
-            const grade=document.getElementById('grade').value, subject=document.getElementById('subject').value, lessonNo=document.getElementById('lessonNo').value, city=document.getElementById('city').value||'منطقه ما';
-            const prompt=`شما یک تیم تخصصی آموزش ابتدایی ایران هستید با نقش‌های:
+    <div class="card">
+      <h3>🌟 مزایا</h3>
+      <p>✅ از ۲ ساعت طراحی به <strong>۱۵ ثانیه</strong><br>
+         ✅ منطبق بر سند تحول بنیادین<br>
+         ✅ شخصی‌سازی بر اساس منطقه شما<br>
+         ✅ سه سطح دانش‌آموز: قوی / متوسط / نیازمند حمایت</p>
+    </div>
 
-1. **استاد برنامه‌ریزی درسی و متخصص روش‌های تدریس نوین**
-2. **طراح ارشد بازی‌های آموزشی**
-3. **متخصص طراحی کاربرگ‌های یادگیری فعال (سطوح بلوم)**
-4. **روان‌شناس تربیتی و متخصص آموزش مهارت‌های زندگی**
-5. **متخصص ارزشیابی توصیفی و سنجش آموزشی**
+    <button class="cta" onclick="showTool()">🚀 شروع کنید</button>
+    <div class="footer-credit">طراحی شده توسط <b>افشار صوفی</b> — همیار معلم v4</div>
+  </div>
 
-برای **پایه ${grade} ابتدایی، درس ${subject}، شماره درس ${lessonNo}** در منطقه **${city}** یک بسته کامل طراحی کن.  
-کاملاً منطبق بر کتاب درسی ایران، قابل اجرا در کلاس واقعی، زبان کودکانه و ساده، مثال‌های بومی از ${city}.  
-همیشه تفاوت دانش‌آموزان (ضعیف، متوسط، قوی) را در نظر بگیر. خروجی را در JSON با ساختار زیر برگردان (فقط JSON):
+  <!-- TOOL PAGE -->
+  <div id="toolPage">
+    <div class="page-header">
+      <button class="back-btn" onclick="showLanding()" title="بازگشت">←</button>
+      <div class="page-title">🧠 همیار معلم</div>
+    </div>
 
-{
-  "teaching_method": {
-    "info": {"title": "عنوان درس", "grade": "${grade}", "duration": "۴۵ دقیقه", "topic": "..."},
-    "objectives": {"knowledge": "...", "skills": "...", "attitudes": "..."},
-    "prerequisites": "...",
-    "method": {"name": "نام روش تدریس (فعال، مشارکتی، اکتشافی، بازی‌محور، گفت‌وگویی)", "reason": "دلیل انتخاب روش"},
-    "materials": ["کتاب"، "تخته"، "..."],
-    "scenario": {
-      "phase_1": {"title": "🟢 شروع و ایجاد انگیزه (۵ دقیقه)", "desc": "دقیقاً معلم چه بگوید و چه کند. مثال: 'بچه‌ها، امروز می‌خوایم با هم یه داستان جالب از روستای ${city} بشنویم...'"},
-      "phase_2": {"title": "🟡 ارائه درس (۱۵ دقیقه)", "desc": "گام‌به‌گام آموزش و تعامل با دانش‌آموزان"},
-      "phase_3": {"title": "🔵 فعالیت یادگیری (۱۰-۱۵ دقیقه)", "desc": "کار گروهی یا فردی با دستور اجرای دقیق"},
-      "phase_4": {"title": "🎮 بازی یا فعالیت تثبیتی", "desc": "نام بازی، هدف، قوانین، نحوه اجرا"},
-      "phase_5": {"title": "🧩 جمع‌بندی (۵ دقیقه)", "desc": "سوالات پایانی و مرور مفاهیم کلیدی"}
-    },
-    "life_skill_integration": {"skill": "مهارت انتخاب‌شده (همکاری، همدلی، مسئولیت‌پذیری، حل مسئله، تصمیم‌گیری، کنترل هیجان)", "entry_point": "در کدام مرحله ادغام می‌شود", "activity": "فعالیت عملی برای تمرین مهارت", "signs": ["نشانه مشاهده ۱", "نشانه ۲"]},
-    "evaluation_in_lesson": {"type": "تشخیصی / تکوینی / عملکردی", "tools": "ابزار", "evidence": "شواهد قابل مشاهده", "sample_sentence": "جمله توصیفی برای دفتر معلم"},
-    "differentiation": {"weak": "برای دانش‌آموز ضعیف", "average": "برای متوسط", "strong": "برای قوی"},
-    "meaningful_homework": "تکلیف کوتاه، غیرتکراری، کاربردی در زندگی",
-    "backup_plan": "اگر کلاس خوب پیش نرفت، یک سناریوی جایگزین سریع و ساده"
-  },
-  "games": [
-    {
-      "name": "نام بازی ۱",
-      "objective": "هدف آموزشی (تمرین / تثبیت / مرور / کشف مفهوم)",
-      "type": "نوع بازی (گروهی / رقابتی / حرکتی / کارتی / نقش‌آفرینی)",
-      "materials": "وسایل (اگر بدون وسیله است بنویس: بدون وسیله)",
-      "steps": {
-        "preparation": "مرحله ۱: آماده‌سازی و چیدمان کلاس",
-        "explanation": "مرحله ۲: توضیح بازی با جملات پیشنهادی معلم",
-        "execution": "مرحله ۳: اجرای بازی و نقش دانش‌آموزان و معلم",
-        "conclusion": "مرحله ۴: پایان بازی و جمع‌بندی"
+    <div class="card">
+      <label class="form-label">📚 درس / موضوع</label>
+      <input class="form-control" id="subject" placeholder="مثال: اعداد یک رقمی، حروف الفبا، محیط زیست…" />
+
+      <label class="form-label">🎓 پایه تحصیلی</label>
+      <select class="form-control" id="grade">
+        <option value="">انتخاب پایه…</option>
+        <option>اول ابتدایی</option>
+        <option>دوم ابتدایی</option>
+        <option>سوم ابتدایی</option>
+        <option>چهارم ابتدایی</option>
+        <option>پنجم ابتدایی</option>
+        <option>ششم ابتدایی</option>
+      </select>
+
+      <label class="form-label">📖 درس</label>
+      <select class="form-control" id="lesson">
+        <option value="">انتخاب درس…</option>
+        <option>ریاضی</option>
+        <option>فارسی</option>
+        <option>علوم تجربی</option>
+        <option>مطالعات اجتماعی</option>
+        <option>هدیه‌های آسمان</option>
+        <option>قرآن</option>
+        <option>هنر</option>
+        <option>تربیت بدنی</option>
+      </select>
+
+      <label class="form-label">🔢 شماره درس (اختیاری)</label>
+      <input class="form-control" id="lessonNumber" type="number" min="1" placeholder="مثلاً ۳" />
+
+      <label class="form-label">⏱️ مدت جلسه</label>
+      <select class="form-control" id="duration">
+        <option>۴۵ دقیقه</option>
+        <option>۶۰ دقیقه</option>
+        <option>۹۰ دقیقه</option>
+        <option>۳۰ دقیقه (اضطراری)</option>
+      </select>
+
+      <label class="form-label">🗺️ منطقه (اختیاری)</label>
+      <input class="form-control" id="region" placeholder="مثال: ارومیه، روستایی، تهران…" />
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generate()">⚡ تولید محتوا با هوش مصنوعی</button>
+
+    <div id="loadingArea" style="display:none">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">در حال تهیه محتوا…</div>
+        <div class="loading-sub">لطفاً چند لحظه صبر کنید</div>
+      </div>
+    </div>
+
+    <div id="outputArea" style="display:none">
+      <div class="output-card">
+        <div class="tabs-bar" id="tabsBar"></div>
+        <div id="tabContents"></div>
+      </div>
+      <div class="action-row">
+        <button class="action-btn" onclick="window.print()">🖨️ چاپ</button>
+        <button class="action-btn" onclick="generate()">🔄 تولید مجدد</button>
+        <button class="action-btn primary" onclick="copyAll()">📋 کپی</button>
+      </div>
+    </div>
+
+    <div class="footer-credit" style="margin-top:30px">طراحی شده توسط <b>افشار صوفی</b></div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat-fab-wrap">
+  <button class="chat-fab-btn" onclick="toggleChat()" id="chatFab">💬</button>
+  <span class="chat-fab-label">دستیار</span>
+</div>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header-bar">
+    <span>💬 دستیار هوشمند</span>
+    <button class="chat-close-btn" onclick="toggleChat()">×</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot">سلام! من دستیار همیار معلم هستم 👋<br>هر سؤالی درباره تدریس، ارزشیابی یا مدیریت کلاس داری بپرس!</div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="پیام بنویسید…" onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════ API CONFIG ═══════════════
+const API_KEY = 'aa-HPcQTOlTmipHPWPzNCXHRfzUCIVDGFRMSEbr5z0xWamy2nbs';
+const API_URL = 'https://api.avalai.ir/v1/chat/completions';
+const MODEL = 'gpt-4o-mini';
+
+// ─── Navigation ───────────────────────────────────────────────
+function showTool() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('toolPage').style.display = 'block';
+}
+function showLanding() {
+  document.getElementById('toolPage').style.display = 'none';
+  document.getElementById('landingPage').style.display = 'block';
+}
+
+// ─── Chat ─────────────────────────────────────────────────────
+let chatHistory = [];
+function toggleChat() {
+  const p = document.getElementById('chatPanel');
+  p.classList.toggle('open');
+}
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addChatMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+  const sendBtn = document.getElementById('chatSendBtn');
+  sendBtn.disabled = true;
+  const thinkEl = addChatMsg('bot', '…', true);
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
       },
-      "teacher_role": "نقش معلم در نظارت، کنترل کلاس، اصلاح خطاها، مدیریت زمان",
-      "common_mistakes": "خطاهای رایج دانش‌آموزان در این بازی",
-      "consolidation": "۳ سوال یا فعالیت کوتاه برای تثبیت یادگیری بعد از بازی"
-    },
-    {"name": "نام بازی ۲", ...},
-    {"name": "نام بازی ۳", ...}
-  ],
-  "game_comparison": {
-    "fastest": "کدام بازی سریع‌تر است",
-    "deepest": "کدام بازی عمیق‌تر است",
-    "crowded_class": "مناسب کلاس شلوغ",
-    "short_time": "مناسب زمان کم"
-  },
-  "worksheets": {
-    "objective": "هدف یادگیری کاربرگ (دقیق، قابل اندازه‌گیری)",
-    "prerequisites": "پیش‌نیازها",
-    "teacher_instruction": "دستور شروع برای معلم",
-    "section_A": {
-      "title": "بخش A: یادآوری و فهم (Basic)",
-      "activities": [
-        {"activity": "متن فعالیت", "expected_answer": "پاسخ مورد انتظار", "objective": "هدف این سوال"}
-      ]
-    },
-    "section_B": {
-      "title": "بخش B: کاربرد (Standard)",
-      "activities": [
-        {"activity": "متن فعالیت", "analysis": "تحلیل کوتاه"}
-      ]
-    },
-    "section_C": {
-      "title": "بخش C: تحلیل و تفکر (Advanced)",
-      "activities": [
-        {"activity": "متن فعالیت", "sample_answer": "پاسخ نمونه", "teacher_guide": "راهنمای معلم"}
-      ]
-    },
-    "creative_activity": "فعالیت خلاقانه پایانی (طراحی، رسم، توضیح، ارتباط با زندگی واقعی)",
-    "self_assessment": {
-      "learned": "چه یاد گرفتم (جای خالی برای دانش‌آموز)",
-      "difficult": "چه سخت بود (جای خالی)",
-      "question_for_teacher": "سوال از معلم (جای خالی)"
-    },
-    "teacher_checklist": ["شاخص مشاهده ۱", "شاخص ۲", "شاخص ۳", "شاخص ۴"],
-    "differentiation": {"weak": "تمرین ساده + حمایت", "average": "تمرین استاندارد", "strong": "مسئله باز + تحلیل"},
-    "common_mistakes": "خطاهای رایج دانش‌آموزان در این کاربرگ",
-    "short_version": "نسخه ۵ دقیقه‌ای"
-  },
-  "life_skill": {
-    "skill": "نام مهارت زندگی",
-    "psychological_analysis": "تحلیل روان‌شناختی: چرا این مهارت با این درس مرتبط است؟ بهترین موقعیت آموزش آن کجاست؟",
-    "dual_objective": "هدف آموزشی درس + هدف مهارت زندگی",
-    "core_scenario": "طراحی یک موقعیت واقعی در کلاس که مهارت در آن اجبار شود",
-    "execution_steps": {
-      "phase_1": {"title": "🟢 ایجاد موقعیت", "desc": "معلم دقیقاً چه بگوید و چه چالشی ایجاد کند"},
-      "phase_2": {"title": "🟡 درگیری دانش‌آموزان", "desc": "گروه‌ها چه کنند، چه تصمیم‌هایی بگیرند"},
-      "phase_3": {"title": "🔵 بروز مهارت", "desc": "کجا همکاری/همدلی/حل مسئله اتفاق می‌افتد"},
-      "phase_4": {"title": "🔴 دخالت هدفمند معلم", "desc": "چه زمانی وارد شود و چه بگوید (جملات آماده)"},
-      "phase_5": {"title": "🟣 جمع‌بندی تجربه", "desc": "تبدیل تجربه به درک مهارت"}
-    },
-    "teacher_scripts": ["جمله برای شروع", "جمله برای هدایت", "جمله برای اصلاح رفتار", "جمله برای تقویت مهارت", "جمله برای جمع‌بندی"],
-    "observable_signs": ["همکاری", "گوش دادن", "کنترل هیجان", "تصمیم‌گیری", "حل اختلاف"],
-    "descriptive_evaluation": {
-      "weak": {"description": "شرح عملکرد", "sentence": "جمله دفتر معلم", "report_sentence": "جمله کارنامه"},
-      "average": {"description": "...", "sentence": "...", "report_sentence": "..."},
-      "strong": {"description": "...", "sentence": "...", "report_sentence": "..."}
-    },
-    "common_teacher_mistakes": "خطاهای رایج معلم در آموزش این مهارت",
-    "real_life_transfer": "یک موقعیت خارج از مدرسه برای تمرین همان مهارت",
-    "simplified_version": "نسخه ۵ دقیقه‌ای برای کلاس شلوغ یا کم‌وقت"
-  },
-  "evaluation": {
-    "analysis": "تحلیل نوع ارزشیابی مناسب (تشخیصی، تکوینی، پایانی، عملکردی، مشاهده‌ای، پوشه کار) و دلیل انتخاب",
-    "objective": "هدف ارزشیابی (دانشی/مهارتی/نگرشی)",
-    "tools": "ابزار پیشنهادی (چک‌لیست، کاربرگ، پرسش کلاسی، فعالیت گروهی، بازی)",
-    "scenario": "سناریوی اجرای ارزشیابی در کلاس",
-    "indicators": ["شاخص مشاهده ۱", "۲", "۳", "۴", "۵"],
-    "levels": {
-      "ضعیف": {"description": "شرح عملکرد", "sentence": "جمله توصیفی"},
-      "متوسط": {"description": "...", "sentence": "..."},
-      "قوی": {"description": "...", "sentence": "..."}
-    },
-    "sample_sentences": {"positive": "جمله مثبت", "needs_effort": "جمله نیاز به تلاش", "growth_suggestion": "جمله پیشنهادی رشد"},
-    "common_mistakes": "خطاهای رایج دانش‌آموزان",
-    "improvement_suggestion": "پیشنهاد برای بهبود یادگیری",
-    "portfolio": "چه شواهدی در پوشه کار نگهداری شود"
-  },
-  "emergency_mode": {
-    "quick_teaching": "تدریس فوق سریع (۵ دقیقه) برای کلاس شلوغ یا کم‌وقت",
-    "quick_game": "بازی فوری (۲-۳ دقیقه) بدون نیاز به وسیله",
-    "quick_activity": "فعالیت نجات‌دهنده برای بی‌انگیزگی",
-    "quick_summary": "جمع‌بندی سریع با ۲ سوال کلیدی"
-  },
-  "classroom_management": {
-    "noisy_class": "راهکار کنترل کلاس شلوغ",
-    "time_management": "مدیریت زمان در کلاس",
-    "difficult_student": "مدیریت دانش‌آموز مشکل‌دار",
-    "instant_solution": "راهکار لحظه‌ای برای بی‌نظمی",
-    "attention_techniques": "تکنیک‌های جلب توجه سریع (مثل بشمار و عمل کن، دست زدن الگویی، سکوت و نگاه)"
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: `تو دستیار تخصصی معلمان ابتدایی ایران هستی. پاسخ‌هایت را به فارسی، کوتاه، عملی و مفید بده. در صورت نیاز از تجربه‌های واقعی کلاس درس استفاده کن.` },
+          ...chatHistory
+        ],
+        temperature: 0.8
+      })
+    });
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || 'متأسفم، خطایی رخ داد.';
+    thinkEl.textContent = reply;
+    thinkEl.classList.remove('thinking');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    thinkEl.textContent = '⚠️ خطا در اتصال. لطفاً دوباره امتحان کنید.';
+    thinkEl.classList.remove('thinking');
   }
-}`;
+  sendBtn.disabled = false;
+}
+function addChatMsg(role, text, thinking=false) {
+  const el = document.createElement('div');
+  el.className = `msg ${role}${thinking?' thinking':''}`;
+  el.textContent = text;
+  const msgs = document.getElementById('chatMsgs');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
 
-            try{
-                const r=await fetch('https://api.avalai.ir/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`},body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:'تولیدکننده محتوای آموزشی فوق‌تخصصی. همیشه JSON معتبر.'},{role:'user',content:prompt}],temperature:0.7,response_format:{type:'json_object'}})});
-                const d=await r.json(); if(d.error) throw new Error(d.error.message);
-                displayResult(JSON.parse(d.choices[0].message.content));
-            }catch(e){alert('خطا: '+e.message);}
-            finally{la.style.display='none'; btn.disabled=false; btn.textContent='✨ ساخت بسته کامل تدریس';}
-        }
+// ─── اعتبارسنجی موضوع ────────────────────────────────────────
+async function validateTopic(subject, grade, lesson, lessonNumber) {
+  const lessonInfo = lessonNumber ? `شماره درس ${lessonNumber}` : '';
+  const prompt = `آیا موضوع "${subject}" یک مبحث معتبر و مرتبط با کتاب درسی ${lesson} پایه ${grade} ${lessonInfo} در ایران است؟ فقط پاسخ "بله" یا "خیر" بده.`;
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: 'تو یک کارشناس برنامه درسی ایران هستی.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 5
+      })
+    });
+    const data = await res.json();
+    const answer = data.choices?.[0]?.message?.content?.trim() || '';
+    return answer.includes('بله') || answer.toLowerCase().includes('yes');
+  } catch (e) {
+    console.error('Validation error:', e);
+    return true; // در صورت خطا، اجازه ادامه
+  }
+}
 
-        function displayResult(d){
-            document.getElementById('output').style.display='block';
-            const teach=d.teaching_method||{};
-            let tHTML='';
-            const info=teach.info||{};
-            if(info.title) tHTML+=`<h3>📋 ${info.title}</h3><p>پایه ${info.grade||''} | مدت ${info.duration||''} | موضوع: ${info.topic||''}</p>`;
-            const obj=teach.objectives||{};
-            if(obj.knowledge) tHTML+=`<h3>🎯 اهداف</h3><p>دانشی: ${obj.knowledge}<br>مهارتی: ${obj.skills||''}<br>نگرشی: ${obj.attitudes||''}</p>`;
-            if(teach.prerequisites) tHTML+=`<p><strong>📌 پیش‌نیازها:</strong> ${teach.prerequisites}</p>`;
-            const method=teach.method||{};
-            if(method.name) tHTML+=`<p><strong>💡 روش:</strong> ${method.name} ${method.reason ? '- '+method.reason : ''}</p>`;
-            if(teach.materials) tHTML+=`<p><strong>✂️ وسایل:</strong> ${safeArray(teach.materials).join('، ')}</p>`;
-            const scenario=teach.scenario||{};
-            ['phase_1','phase_2','phase_3','phase_4','phase_5'].forEach((p,i)=>{
-                if(scenario[p]) tHTML+=`<div class="phase-card"><b>${scenario[p].title||''}</b><p>${scenario[p].desc||''}</p></div>`;
-            });
-            const lifeIn=teach.life_skill_integration||{};
-            if(lifeIn.skill) tHTML+=`<p><strong>🌱 مهارت:</strong> ${lifeIn.skill} (نقطه ورود: ${lifeIn.entry_point||''})</p>`;
-            const evalIn=teach.evaluation_in_lesson||{};
-            if(evalIn.type) tHTML+=`<p><strong>📋 ارزشیابی:</strong> ${evalIn.type} - ${evalIn.tools||''}</p>`;
-            const diff=teach.differentiation||{};
-            if(diff.weak) tHTML+=`<p><strong>🔄 تفاوت‌سازی:</strong> ضعیف: ${diff.weak} | متوسط: ${diff.average||''} | قوی: ${diff.strong||''}</p>`;
-            if(teach.meaningful_homework) tHTML+=`<p><strong>🏡 تکلیف:</strong> ${teach.meaningful_homework}</p>`;
-            if(teach.backup_plan) tHTML+=`<div class="highlight"><strong>🔄 جایگزین:</strong> ${teach.backup_plan}</div>`;
-            document.getElementById('teaching').innerHTML=tHTML||'<p>اطلاعات طرح درس یافت نشد.</p>';
+// ─── Main generation ──────────────────────────────────────────
+const TABS = [
+  { id: 'plan',    label: '📘 طرح درس' },
+  { id: 'games',   label: '🎲 بازی‌ها' },
+  { id: 'sheet',   label: '📝 کاربرگ' },
+  { id: 'life',    label: '🌱 مهارت زندگی' },
+  { id: 'eval',    label: '📋 ارزشیابی' },
+  { id: 'manage',  label: '👨‍🏫 مدیریت کلاس' },
+  { id: 'emerg',   label: '🚨 اضطراری' },
+];
 
-            const games=safeArray(d.games);
-            let gHTML='';
-            games.forEach((game,i)=>{
-                gHTML+=`<div class="game-card"><h3>🎮 بازی ${i+1}: ${game.name||''}</h3><p><strong>هدف:</strong> ${game.objective||''} | <strong>نوع:</strong> ${game.type||''} | وسایل: ${game.materials||'بدون وسیله'}</p>`;
-                if(game.steps){
-                    gHTML+=`<div class="step-card"><b>۱. آماده‌سازی:</b> ${game.steps.preparation||''}</div>`;
-                    gHTML+=`<div class="step-card"><b>۲. توضیح:</b> ${game.steps.explanation||''}</div>`;
-                    gHTML+=`<div class="step-card"><b>۳. اجرا:</b> ${game.steps.execution||''}</div>`;
-                    gHTML+=`<div class="step-card"><b>۴. پایان:</b> ${game.steps.conclusion||''}</div>`;
-                }
-                gHTML+=`<p><strong>👀 نظارت:</strong> ${game.teacher_role||''}</p><p><strong>⚠️ خطاها:</strong> ${game.common_mistakes||''}</p><div class="highlight">🧠 تثبیت: ${game.consolidation||''}</div></div>`;
-            });
-            const comp=d.game_comparison||{};
-            if(comp.fastest){
-                gHTML+=`<h4>📊 مقایسه</h4><table class="comparison-table"><tr><th>معیار</th><th>بازی</th></tr>`;
-                if(comp.fastest) gHTML+=`<tr><td>⚡ سریع‌ترین</td><td>${comp.fastest}</td></tr>`;
-                if(comp.deepest) gHTML+=`<tr><td>🧠 عمیق‌ترین</td><td>${comp.deepest}</td></tr>`;
-                if(comp.crowded_class) gHTML+=`<tr><td>👥 کلاس شلوغ</td><td>${comp.crowded_class}</td></tr>`;
-                if(comp.short_time) gHTML+=`<tr><td>⏱ زمان کم</td><td>${comp.short_time}</td></tr>`;
-                gHTML+=`</table>`;
-            }
-            document.getElementById('game').innerHTML=gHTML||'<p>اطلاعات بازی یافت نشد.</p>';
+const SYSTEM_PROMPT = `تو یک متخصص ارشد آموزش ابتدایی ایران هستی با ۲۰ سال سابقه تدریس و تألیف محتوای درسی. ویژگی‌های مهم تو:
 
-            const ws=d.worksheets||{};
-            let wHTML='';
-            if(ws.objective) wHTML+=`<div class="highlight"><strong>🎯 هدف:</strong> ${ws.objective}</div>`;
-            if(ws.prerequisites) wHTML+=`<p><strong>📌 پیش‌نیازها:</strong> ${ws.prerequisites}</p>`;
-            if(ws.teacher_instruction) wHTML+=`<p><strong>📢 دستور:</strong> ${ws.teacher_instruction}</p>`;
-            const sections=[
-                {key:'section_A',title:'🔹 بخش A: یادآوری و فهم',color:'#2196F3',ans:'expected_answer'},
-                {key:'section_B',title:'🔹 بخش B: کاربرد',color:'#FF9800',ans:'analysis'},
-                {key:'section_C',title:'🔹 بخش C: تحلیل و تفکر',color:'#4CAF50',ans:'sample_answer'}
-            ];
-            sections.forEach(sec=>{
-                const data=ws[sec.key]||{};
-                const acts=safeArray(data.activities);
-                if(acts.length>0){
-                    wHTML+=`<div class="worksheet-card"><h3 style="background:${sec.color}">${data.title||sec.title}</h3>`;
-                    acts.forEach((act,i)=>{
-                        wHTML+=`<div class="question"><strong>${i+1}.</strong> ${act.activity||''}`;
-                        if(act.objective) wHTML+=`<span class="meta-info"> (هدف: ${act.objective})</span>`;
-                        if(act[sec.ans]) wHTML+=`<div class="answer-box">${sec.ans==='analysis'?'💡':'✅'} ${act[sec.ans]}</div>`;
-                        if(act.teacher_guide) wHTML+=`<p class="meta-info">راهنما: ${act.teacher_guide}</p>`;
-                        wHTML+=`</div>`;
-                    });
-                    wHTML+=`</div>`;
-                }
-            });
-            if(ws.creative_activity) wHTML+=`<div class="highlight"><strong>🎨 خلاقانه:</strong> ${ws.creative_activity}</div>`;
-            const self=ws.self_assessment||{};
-            if(self.learned){
-                wHTML+=`<div class="self-assessment"><h4>🧠 خودارزیابی</h4><p>✔ یاد گرفتم: ${self.learned}</p><p>✔ سخت بود: ${self.difficult||''}</p><p>✔ سوال از معلم: ${self.question_for_teacher||''}</p></div>`;
-            }
-            if(safeArray(ws.teacher_checklist).length>0){
-                wHTML+=`<div class="checklist"><h4>👀 چک‌لیست معلم</h4>`;
-                safeArray(ws.teacher_checklist).forEach(item=>wHTML+=`<div class="checklist-item">${item}</div>`);
-                wHTML+=`</div>`;
-            }
-            const diffW=ws.differentiation||{};
-            if(diffW.weak) wHTML+=`<p><strong>📊 تفکیک:</strong> ضعیف: ${diffW.weak} | متوسط: ${diffW.average||''} | قوی: ${diffW.strong||''}</p>`;
-            if(ws.common_mistakes) wHTML+=`<p><strong>⚠️ خطاها:</strong> ${ws.common_mistakes}</p>`;
-            if(ws.short_version) wHTML+=`<p><strong>⏱ نسخه ۵ دقیقه‌ای:</strong> ${ws.short_version}</p>`;
-            wHTML+=`<button onclick="window.print()" style="margin-top:10px;background:#2196F3;">🖨️ پرینت کاربرگ</button>`;
-            document.getElementById('worksheet').innerHTML=wHTML||'<p>اطلاعات کاربرگ یافت نشد.</p>';
+• به کتاب‌های درسی وزارت آموزش و پرورش ایران (چاپ جدید) کاملاً مسلط هستی
+• سند تحول بنیادین آموزش و پرورش و ۶ ساحت تربیتی آن را عمیقاً می‌شناسی
+• با رویکرد تدریس فعال (یادگیری مشارکتی، بارش فکری، حل مسئله، ایفای نقش) آشنا هستی
+• نظریه‌های رشد کودک (ویگوتسکی، پیاژه، بلوم) را در طراحی محتوا به‌کار می‌بری
+• تفاوت سبک‌های یادگیری (دیداری، شنیداری، حرکتی) را در فعالیت‌ها لحاظ می‌کنی
+• به واقعیت کلاس‌های ایران (تعداد دانش‌آموز زیاد، کمبود امکانات) توجه داری
+• خروجی‌هایت همیشه بلافاصله قابل استفاده در کلاس هستند بدون نیاز به آماده‌سازی اضافه
 
-            const life=d.life_skill||{};
-            let lHTML='';
-            if(life.skill){
-                lHTML=`<h3>🌱 مهارت زندگی: ${life.skill}</h3>`;
-                if(life.psychological_analysis) lHTML+=`<div class="highlight"><strong>🧠 تحلیل روان‌شناختی:</strong> ${life.psychological_analysis}</div>`;
-                if(life.dual_objective) lHTML+=`<p><strong>🎯 هدف دوگانه:</strong> ${life.dual_objective}</p>`;
-                if(life.core_scenario) lHTML+=`<p><strong>📍 موقعیت یادگیری:</strong> ${life.core_scenario}</p>`;
-                const steps=life.execution_steps||{};
-                ['phase_1','phase_2','phase_3','phase_4','phase_5'].forEach((p,i)=>{
-                    if(steps[p]) lHTML+=`<div class="phase-card"><b>${steps[p].title||''}</b><p>${steps[p].desc||''}</p></div>`;
-                });
-                if(safeArray(life.teacher_scripts).length>0){
-                    lHTML+=`<div class="script-box"><h4>🗣 جملات معلم</h4>`;
-                    safeArray(life.teacher_scripts).forEach(s=>lHTML+=`<div class="script-item">💬 ${s}</div>`);
-                    lHTML+=`</div>`;
-                }
-                if(safeArray(life.observable_signs).length>0) lHTML+=`<h4>👀 نشانه‌ها</h4><ul>${safeArray(life.observable_signs).map(s=>`<li>${s}</li>`).join('')}</ul>`;
-                const evalLife=life.descriptive_evaluation||{};
-                if(evalLife.weak){
-                    lHTML+=`<h4>📊 ارزشیابی مهارت</h4>`;
-                    ['weak','average','strong'].forEach(level=>{
-                        if(evalLife[level]){
-                            const lvl=evalLife[level];
-                            lHTML+=`<div class="step-card"><b>${level==='weak'?'ضعیف':level==='average'?'متوسط':'قوی'}</b>: ${lvl.description||''}<br><span class="sentence-box">🗣 دفتر: ${lvl.sentence||''}</span><br><span class="sentence-box">📄 کارنامه: ${lvl.report_sentence||''}</span></div>`;
-                        }
-                    });
-                }
-                if(life.common_teacher_mistakes) lHTML+=`<p><strong>⚠️ خطاهای معلم:</strong> ${life.common_teacher_mistakes}</p>`;
-                if(life.real_life_transfer) lHTML+=`<div class="highlight"><strong>🏡 انتقال به زندگی:</strong> ${life.real_life_transfer}</div>`;
-                if(life.simplified_version) lHTML+=`<p><strong>⏱ نسخه ۵ دقیقه‌ای:</strong> ${life.simplified_version}</p>`;
-            }
-            document.getElementById('life').innerHTML=lHTML||'<p>اطلاعات مهارت زندگی یافت نشد.</p>';
+همیشه به فارسی روان، گرم و تخصصی پاسخ بده. از جملات کلیشه‌ای مثل "این یک طرح درس جامع است" خودداری کن و مستقیم وارد محتوای اصلی شو.`;
 
-            const ev=d.evaluation||{};
-            let eHTML='<h3>📋 نظام ارزشیابی توصیفی</h3>';
-            if(ev.analysis) eHTML+=`<p><strong>🔍 تحلیل:</strong> ${ev.analysis}</p>`;
-            if(ev.objective) eHTML+=`<p><strong>🎯 هدف:</strong> ${ev.objective}</p>`;
-            if(ev.tools) eHTML+=`<p><strong>🛠 ابزار:</strong> ${ev.tools}</p>`;
-            if(ev.scenario) eHTML+=`<div class="step-card"><b>📋 سناریو:</b><p>${ev.scenario}</p></div>`;
-            if(ev.indicators) eHTML+=`<p><strong>👀 شاخص‌ها:</strong><ul>${safeArray(ev.indicators).map(i=>`<li>${i}</li>`).join('')}</ul></p>`;
-            if(ev.levels){
-                eHTML+='<h4>📊 سطح‌بندی</h4>';
-                ['ضعیف','متوسط','قوی'].forEach(l=>{
-                    if(ev.levels[l]) eHTML+=`<div class="step-card"><b>${l}:</b> ${ev.levels[l].description||''}<br><span class="sentence-box">🗣 ${ev.levels[l].sentence||''}</span></div>`;
-                });
-            }
-            if(ev.sample_sentences){
-                eHTML+='<h4>✍️ جملات آماده</h4>';
-                if(ev.sample_sentences.positive) eHTML+=`<div class="sentence-box">✅ ${ev.sample_sentences.positive}</div>`;
-                if(ev.sample_sentences.needs_effort) eHTML+=`<div class="sentence-box">⚠️ ${ev.sample_sentences.needs_effort}</div>`;
-                if(ev.sample_sentences.growth_suggestion) eHTML+=`<div class="sentence-box">🌱 ${ev.sample_sentences.growth_suggestion}</div>`;
-            }
-            if(ev.common_mistakes) eHTML+=`<p><strong>❗ خطاها:</strong> ${ev.common_mistakes}</p>`;
-            if(ev.improvement_suggestion) eHTML+=`<p><strong>💡 پیشنهاد:</strong> ${ev.improvement_suggestion}</p>`;
-            if(ev.portfolio) eHTML+=`<div class="highlight"><b>📁 پوشه کار:</b> ${ev.portfolio}</div>`;
-            document.getElementById('eval').innerHTML=eHTML;
+const PROMPTS = {
 
-            const em=d.emergency_mode||{};
-            let emHTML='<h3>🚨 حالت اضطراری تدریس</h3>';
-            if(em.quick_teaching) emHTML+=`<div class="phase-card"><b>⚡ تدریس فوق سریع (۵ دقیقه)</b><p>${em.quick_teaching}</p></div>`;
-            if(em.quick_game) emHTML+=`<div class="phase-card"><b>🎮 بازی فوری (۲-۳ دقیقه)</b><p>${em.quick_game}</p></div>`;
-            if(em.quick_activity) emHTML+=`<div class="phase-card"><b>✏️ فعالیت نجات‌دهنده</b><p>${em.quick_activity}</p></div>`;
-            if(em.quick_summary) emHTML+=`<div class="phase-card"><b>🧩 جمع‌بندی سریع</b><p>${em.quick_summary}</p></div>`;
-            document.getElementById('emergency').innerHTML=emHTML||'<p>اطلاعات حالت اضطراری یافت نشد.</p>';
+  plan: (s,g,l,d,r) => `
+طرح درس تخصصی زیر را برای من بنویس:
 
-            const cm=d.classroom_management||{};
-            let cmHTML='<h3>👨‍🏫 مدیریت کلاس</h3>';
-            if(cm.noisy_class) cmHTML+=`<div class="phase-card"><b>🔊 کنترل کلاس شلوغ</b><p>${cm.noisy_class}</p></div>`;
-            if(cm.time_management) cmHTML+=`<div class="phase-card"><b>⏰ مدیریت زمان</b><p>${cm.time_management}</p></div>`;
-            if(cm.difficult_student) cmHTML+=`<div class="phase-card"><b>🧑‍🎓 مدیریت دانش‌آموز مشکل‌دار</b><p>${cm.difficult_student}</p></div>`;
-            if(cm.instant_solution) cmHTML+=`<div class="phase-card"><b>🆘 راهکار لحظه‌ای برای بی‌نظمی</b><p>${cm.instant_solution}</p></div>`;
-            if(cm.attention_techniques) cmHTML+=`<div class="highlight"><b>🔔 تکنیک‌های جلب توجه سریع:</b> ${cm.attention_techniques}</div>`;
-            document.getElementById('classroom').innerHTML=cmHTML||'<p>اطلاعات مدیریت کلاس یافت نشد.</p>';
-        }
+موضوع: «${s}» | درس: ${l} | پایه: ${g} | مدت: ${d}${r ? ` | منطقه: ${r}` : ''}
 
-        function showTab(id){
-            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-            document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            event.target.classList.add('active');
-        }
+━━━ فرمت دقیق خروجی ━━━
 
-        function toggleChat(){ document.getElementById('chatPanel').classList.toggle('open'); }
-        async function sendMessage(){
-            const inp=document.getElementById('chatInput'); const msg=inp.value.trim(); if(!msg) return;
-            appendChat('user',msg); inp.value=''; const tb=appendChat('assistant','...');
-            try{
-                const r=await fetch('https://api.avalai.ir/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`},body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:'دستیار آموزشی هوشمند برای معلمان ابتدایی ایران. پاسخ‌ها مفید، عملی، مختصر و به فارسی ساده.'},{role:'user',content:msg}],temperature:0.8})});
-                const d=await r.json(); tb.remove(); appendChat('assistant',d.choices[0].message.content);
-            }catch(e){tb.remove(); appendChat('assistant','خطا. دوباره تلاش کنید.');}
-        }
-        function appendChat(role,text){
-            const c=document.getElementById('chatMessages'), b=document.createElement('div');
-            b.className=`chat-bubble ${role}`; b.textContent=text; c.appendChild(b); c.scrollTop=c.scrollHeight; return b;
-        }
-    </script>
+**🎯 اهداف یادگیری (حوزه شناختی، عاطفی، مهارتی)**
+اهداف را با فعل‌های رفتاری دقیق بنویس (بر اساس طبقه‌بندی بلوم):
+- شناختی: دانش‌آموز می‌تواند... (دانستن/درک/کاربرد)
+- عاطفی: دانش‌آموز نسبت به... احساس... پیدا می‌کند
+- مهارتی: دانش‌آموز قادر است... انجام دهد
+
+**📋 پیش‌نیازهای درس**
+مفاهیمی که دانش‌آموز باید از قبل بداند (۲-۳ مورد)
+
+**🛠️ مواد و وسایل آموزشی**
+(جداگانه برای معلم و دانش‌آموز، با جایگزین‌های ارزان‌قیمت)
+
+**⏱️ مراحل تدریس با زمان‌بندی دقیق**
+
+مرحله ۱ — آغازگری و ایجاد انگیزه (دقیقه اول تا [زمان]):
+← یک سؤال کنجکاوی‌برانگیز یا موقعیت مسئله واقعی از زندگی دانش‌آموز بنویس
+← روش ارتباط با دانش قبلی
+
+مرحله ۲ — ارائه محتوای جدید (دقیقه [X] تا [Y]):
+← روش تدریس اصلی (تصویری/داستانی/اکتشافی/مشارکتی)
+← مثال‌های ملموس از محیط آشنای کودک ایرانی
+← نقطه کلیدی که معلم باید حتماً تأکید کند
+
+مرحله ۳ — تمرین راهنما (دقیقه [X] تا [Y]):
+← فعالیت گروهی یا جفتی مشخص
+← نقش معلم در این مرحله
+
+مرحله ۴ — تمرین مستقل (دقیقه [X] تا [Y]):
+← تکلیف یا فعالیت فردی
+← نحوه تمایز برای دانش‌آموزان ضعیف‌تر و قوی‌تر
+
+مرحله ۵ — جمع‌بندی و ارزشیابی پایانی (دقیقه [X] تا [Y]):
+← روش بررسی یادگیری (نه فقط سؤال شفاهی)
+← تکلیف خانه با هدف مشخص
+
+**⚠️ اشتباهات رایج دانش‌آموزان در این درس و راه پیشگیری**
+
+**🌟 ارتباط با سند تحول بنیادین**
+کدام ساحت تربیتی و کدام هدف کلان پوشش داده می‌شود
+`,
+
+  games: (s,g,l) => `
+سه بازی آموزشی تخصصی طراحی کن برای:
+موضوع: «${s}» | درس: ${l} | پایه: ${g}
+
+هر بازی باید با سبک‌های یادگیری متفاوت (دیداری / شنیداری / حرکتی) تطابق داشته باشد و واقعاً در کلاس ایرانی قابل اجرا باشد.
+
+━━━ بازی اول: [برای یادگیرندگان حرکتی] ━━━
+**نام بازی:**
+**هدف آموزشی دقیق:** (چه مفهوم یا مهارتی را تثبیت می‌کند)
+**تعداد بازیکن و چیدمان:** 
+**مدت زمان:**
+**وسایل لازم:** (جایگزین ارزان‌قیمت هم بنویس)
+**مرحله ۱ تا ۵ اجرا:** (قدم به قدم دقیق)
+**قانون برنده شدن:**
+**نکته مدیریت کلاس:** (چطور هرج‌ومرج نشود)
+
+━━━ بازی دوم: [برای یادگیرندگان دیداری-زبانی] ━━━
+(همان فرمت بالا)
+
+━━━ بازی سوم: [رقابتی/گروهی با هیجان بالا] ━━━
+(همان فرمت بالا)
+
+در پایان: **جدول انتخاب بازی** — کدام بازی برای کدام موقعیت کلاس مناسب‌تر است
+`,
+
+  sheet: (s,g,l) => `
+یک کاربرگ آموزشی سه‌سطحی کامل و چاپ‌آماده طراحی کن:
+موضوع: «${s}» | درس: ${l} | پایه: ${g}
+
+━━━ سرصفحه کاربرگ ━━━
+نام: ............... | کلاس: ......... | تاریخ: .........
+موضوع: ${s} | درس: ${l} | پایه: ${g}
+
+━━━ 🔵 سطح الف — دانش‌آموزان پیشرفته (چالشی) ━━━
+(۴ سؤال که نیاز به تحلیل، ترکیب یا ارزیابی دارند — سطوح بالای بلوم)
+سؤال ۱: [سؤال باز یا مسئله چندمرحله‌ای]
+سؤال ۲: [مقایسه، استدلال یا خلاقیت]
+سؤال ۳: [کاربرد در موقعیت جدید]
+سؤال ۴: [طراحی یا حل مسئله]
+
+━━━ 🟡 سطح ب — دانش‌آموزان متوسط (استاندارد) ━━━
+(۴ سؤال — درک و کاربرد مستقیم)
+سؤال ۱: [سؤال کوتاه‌پاسخ]
+سؤال ۲: [جاخالی با زمینه]
+سؤال ۳: [صحیح/غلط با دلیل]
+سؤال ۴: [تطبیق یا مرتب‌سازی]
+
+━━━ 🟢 سطح ج — دانش‌آموزان نیازمند حمایت (پایه) ━━━
+(۴ سؤال — دانش و درک ساده با راهنما)
+سؤال ۱: [جاخالی ساده با کمک واژه‌نامه]
+سؤال ۲: [وصل‌کردن ستون‌ها]
+سؤال ۳: [انتخابی با ۳ گزینه]
+سؤال ۴: [کامل‌کردن تصویر یا الگو]
+
+━━━ 🔑 کلید پاسخ (برای معلم) ━━━
+پاسخ تمام سؤالات هر سه سطح را بنویس
+`,
+
+  life: (s,g,l) => `
+یک برنامه ادغام مهارت زندگی طراحی کن:
+موضوع: «${s}» | درس: ${l} | پایه: ${g}
+
+━━━ ۱. شناسایی مهارت زندگی اصلی ━━━
+کدام مهارت از فهرست WHO (سازمان بهداشت جهانی) با این درس بهترین تناسب دارد:
+□ تصمیم‌گیری  □ حل مسئله  □ تفکر خلاق  □ تفکر انتقادی
+□ ارتباط مؤثر  □ مهارت‌های بین‌فردی  □ خودآگاهی  □ همدلی
+□ مدیریت هیجانات  □ مقابله با فشار و استرس
+گزینه پیشنهادی: [نام مهارت و دلیل انتخاب]
+
+━━━ ۲. پیوند با محتوای درسی ━━━
+چطور مفهوم «${s}» یک پل طبیعی به این مهارت می‌سازد:
+(یک داستان یا سناریوی کوتاه واقعی از زندگی کودک ایرانی)
+
+━━━ ۳. فعالیت آموزشی ۱۵ دقیقه‌ای ━━━
+دقیقه ۰-۳: [معرفی موقعیت مسئله با نقش‌آفرینی]
+دقیقه ۳-۱۰: [فعالیت گروهی یا فردی با دستورالعمل دقیق]
+دقیقه ۱۰-۱۵: [بحث کلاسی و جمع‌بندی]
+سؤالات راهنمای معلم: (۳ سؤال سقراطی برای هدایت بحث)
+
+━━━ ۴. تکلیف خانه (مهارت محور) ━━━
+یک فعالیت خانگی که کودک با خانواده انجام می‌دهد و مهارت را در محیط واقعی تمرین می‌کند
+
+━━━ ۵. ارتباط با ساحت‌های تربیتی سند تحول ━━━
+- ساحت مرتبط:
+- هدف کلان:
+- ارزش اسلامی-ایرانی مرتبط:
+`,
+
+  eval: (s,g,l) => `
+یک ابزار ارزشیابی توصیفی کامل و استاندارد طراحی کن:
+موضوع: «${s}» | درس: ${l} | پایه: ${g}
+(مطابق با آیین‌نامه ارزشیابی توصیفی وزارت آموزش و پرورش ایران)
+
+━━━ بخش اول: چک‌لیست مشاهده معلم ━━━
+(برای ثبت حین تدریس — هر روز یا هر هفته)
+
+| شاخص مشاهده | همیشه | اغلب | گاهی | به‌ندرت |
+|---|---|---|---|---|
+| ۱. مشارکت فعال در بحث کلاسی | ☐ | ☐ | ☐ | ☐ |
+| ۲. درک صحیح مفهوم ${s} | ☐ | ☐ | ☐ | ☐ |
+| ۳. توانایی بیان ایده با زبان خود | ☐ | ☐ | ☐ | ☐ |
+| ۴. همکاری در کار گروهی | ☐ | ☐ | ☐ | ☐ |
+| ۵. کاربرد دانش در موقعیت جدید | ☐ | ☐ | ☐ | ☐ |
+| ۶. [شاخص تخصصی مرتبط با ${s}] | ☐ | ☐ | ☐ | ☐ |
+
+━━━ بخش دوم: رتبه‌بندی توصیفی (۴ سطح) ━━━
+
+**سطح ۱ — عالی (خیلی خوب):**
+توصیف دقیق از آنچه دانش‌آموز در این سطح نشان می‌دهد:
+(۳-۴ جمله توصیفی رفتارمحور)
+
+**سطح ۲ — خوب:**
+(۳-۴ جمله توصیفی)
+
+**سطح ۳ — قابل قبول:**
+(۳-۴ جمله توصیفی)
+
+**سطح ۴ — نیاز به تلاش بیشتر:**
+(۳-۴ جمله توصیفی + راهکار پیشنهادی)
+
+━━━ بخش سوم: بانک جملات بازخورد کارنامه ━━━
+
+🟢 جملات تشویقی (برای کارنامه — ۵ نمونه):
+۱. ...  ۲. ...  ۳. ...  ۴. ...  ۵. ...
+
+🟡 جملات انگیزشی-بهبوددهنده (۵ نمونه):
+۱. ...  ۲. ...  ۳. ...  ۴. ...  ۵. ...
+
+🔵 جملات حمایتی برای دانش‌آموز نیازمند توجه ویژه (۳ نمونه):
+(جملاتی که انگیزه ایجاد کنند نه ناامیدی)
+
+━━━ بخش چهارم: ارزشیابی عملکردی ━━━
+یک تکلیف عملکردی (پروژه کوچک) که نشان‌دهد دانش‌آموز واقعاً ${s} را یاد گرفته:
+معیار داوری: [رابریک ساده ۳ ستونه]
+`,
+
+  manage: (s,g,l) => `
+یک راهنمای جامع مدیریت کلاس طراحی کن برای:
+موضوع: «${s}» | درس: ${l} | پایه: ${g}
+
+━━━ ۱. طراحی محیط یادگیری ━━━
+چیدمان پیشنهادی کلاس برای این درس (با توضیح چرا):
+□ ردیفی سنتی  □ نعل‌اسبی  □ گروهی (جزیره)  □ دایره‌ای
+گزینه پیشنهادی: [دلیل کامل]
+نقشه ساده چیدمان: (با متن توصیف کن)
+
+━━━ ۲. گروه‌بندی هوشمند ━━━
+روش گروه‌بندی مناسب برای این درس:
+- معیار گروه‌بندی: (سطح / تصادفی / علاقه / سبک یادگیری)
+- تعداد نفر در هر گروه و دلیل
+- نقش‌های درون گروهی: (رهبر / منشی / گزارشگر / ناظر زمان)
+- چطور دانش‌آموز ضعیف از قوی یاد بگیرد بدون احساس تحقیر
+
+━━━ ۳. روتین‌های مدیریتی ━━━
+- شروع کلاس: چطور در ۳ دقیقه همه آماده شوند
+- انتقال بین فعالیت‌ها: یک روش سریع و بدون هرج‌ومرج
+- جمع‌آوری توجه پراکنده: ۳ تکنیک غیرکلامی مؤثر
+- پایان کلاس: روتین جمع‌آوری و خروج منظم
+
+━━━ ۴. مدیریت رفتارهای چالش‌برانگیز ━━━
+برای هر حالت راهکار عملی بنویس:
+- دانش‌آموز بیش‌فعال که حواس بقیه را پرت می‌کند:
+- دانش‌آموز منفعل که اصلاً مشارکت نمی‌کند:
+- کشمکش بین دو دانش‌آموز حین کار گروهی:
+- دانش‌آموزی که «نمی‌دانم» را دستاویز قرار می‌دهد:
+
+━━━ ۵. سیستم انگیزشی پیشنهادی ━━━
+یک سیستم تشویق ساده، عادلانه و مؤثر برای این جلسه:
+(بدون نیاز به هزینه، فقط با ابزارهای موجود در کلاس)
+`,
+
+  emerg: (s,g,l) => `
+یک برنامه تدریس اضطراری حرفه‌ای طراحی کن:
+موضوع: «${s}» | درس: ${l}
+
+⚡ شرایط: تابلو خراب است، برق نیست، هیچ وسیله‌ای در دسترس نیست، معلم ۵ دقیقه پیش مطلع شده
+
+━━━ پروتکل اضطراری ۳۰ دقیقه ━━━
+
+🔴 دقیقه ۱ تا ۵ — فعال‌سازی ذهن بدون وسیله:
+[یک فعالیت کلامی یا جسمانی که فوری شروع شود]
+دستورالعمل دقیق معلم: «...»
+
+🟠 دقیقه ۵ تا ۱۲ — آموزش مفهوم اصلی با روش داستان/بازی کلامی:
+[توضیح روش + دیالوگ نمونه معلم با کلاس]
+سؤالات سقراطی: (۳ سؤال برای هدایت کشف مفهوم)
+
+🟡 دقیقه ۱۲ تا ۲۲ — تمرین گروهی بدون وسیله:
+بازی یا فعالیت مشخص:
+قانون: ...
+نقش معلم در این مرحله: ...
+
+🟢 دقیقه ۲۲ تا ۲۸ — ارزشیابی شفاهی:
+[یک تکنیک سریع برای بررسی یادگیری همه دانش‌آموزان بدون کاغذ]
+
+🔵 دقیقه ۲۸ تا ۳۰ — جمع‌بندی و تکلیف:
+یک جمله کلیدی که دانش‌آموز حفظ می‌برد خانه: «...»
+تکلیف شفاهی: (بدون نیاز به نوشتن)
+
+━━━ ابزار دست معلم ━━━
+۵ سؤال آماده برای اگر زمان اضافه آمد:
+۱. ...  ۲. ...  ۳. ...  ۴. ...  ۵. ...
+`,
+
+};
+
+const LOADING_MSGS = [
+  'در حال تحلیل محتوای درسی…',
+  'طراحی فعالیت‌های آموزشی…',
+  'تنظیم بر اساس پایه تحصیلی…',
+  'ساخت بازی‌های آموزشی…',
+  'آماده‌سازی کاربرگ‌ها…',
+  'تقریباً آماده شد…',
+];
+
+let loadingInterval;
+
+async function generate() {
+  const subject  = document.getElementById('subject').value.trim();
+  const grade    = document.getElementById('grade').value;
+  const lesson   = document.getElementById('lesson').value;
+  const lessonNumber = document.getElementById('lessonNumber').value.trim();
+  const duration = document.getElementById('duration').value;
+  const region   = document.getElementById('region').value.trim();
+
+  if (!subject || !grade || !lesson) {
+    alert('لطفاً موضوع، پایه و درس را وارد کنید.');
+    return;
+  }
+
+  // غیرفعال کردن دکمه و نمایش حالت انتظار
+  const genBtn = document.getElementById('genBtn');
+  genBtn.disabled = true;
+  genBtn.textContent = '⏳ در حال بررسی موضوع…';
+  
+  // اعتبارسنجی موضوع
+  const isValid = await validateTopic(subject, grade, lesson, lessonNumber);
+  if (!isValid) {
+    alert('❌ موضوع وارد شده با پایه و درس انتخاب‌شده همخوانی ندارد. لطفاً موضوع را اصلاح کنید.');
+    genBtn.disabled = false;
+    genBtn.textContent = '⚡ تولید محتوا با هوش مصنوعی';
+    return;
+  }
+
+  genBtn.textContent = '⏳ در حال ساخت…';
+  document.getElementById('loadingArea').style.display = 'block';
+  document.getElementById('outputArea').style.display = 'none';
+
+  // Animated loading messages
+  let msgIdx = 0;
+  const loadingText = document.getElementById('loadingText');
+  loadingInterval = setInterval(() => {
+    loadingText.textContent = LOADING_MSGS[msgIdx % LOADING_MSGS.length];
+    msgIdx++;
+  }, 1200);
+
+  try {
+    // Parallel API calls for all tabs
+    const results = await Promise.all(
+      TABS.map(tab => callAPI(PROMPTS[tab.id](subject, grade, lesson, duration, region), tab.id))
+    );
+
+    clearInterval(loadingInterval);
+    renderOutput(results);
+  } catch(e) {
+    clearInterval(loadingInterval);
+    loadingText.textContent = '⚠️ خطا در ارتباط با هوش مصنوعی. دوباره امتحان کنید.';
+    document.getElementById('genBtn').disabled = false;
+  }
+}
+
+async function callAPI(prompt, tabId) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 1500,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.7
+    })
+  });
+  const data = await res.json();
+  return { id: tabId, content: data.choices?.[0]?.message?.content || 'خطا در دریافت محتوا.' };
+}
+
+function renderOutput(results) {
+  document.getElementById('loadingArea').style.display = 'none';
+  document.getElementById('outputArea').style.display = 'block';
+  document.getElementById('genBtn').disabled = false;
+
+  const tabsBar = document.getElementById('tabsBar');
+  const tabContents = document.getElementById('tabContents');
+  tabsBar.innerHTML = '';
+  tabContents.innerHTML = '';
+
+  results.forEach((r, i) => {
+    const tab = TABS.find(t => t.id === r.id) || TABS[i];
+
+    // Tab button
+    const btn = document.createElement('button');
+    btn.className = `tab-btn${i===0?' active':''}`;
+    btn.textContent = tab.label;
+    btn.onclick = () => activateTab(r.id);
+    btn.id = `tab-btn-${r.id}`;
+    tabsBar.appendChild(btn);
+
+    // Tab content
+    const div = document.createElement('div');
+    div.className = `tab-content${i===0?' active':''}`;
+    div.id = `tab-${r.id}`;
+    div.innerHTML = markdownToHtml(r.content);
+    tabContents.appendChild(div);
+  });
+
+  // Scroll to output
+  document.getElementById('outputArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+function activateTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-btn-${id}`)?.classList.add('active');
+  document.getElementById(`tab-${id}`)?.classList.add('active');
+}
+
+// Simple markdown → HTML converter
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^#{1,3} (.+)$/gm, '<div class="section-title">$1</div>')
+    .replace(/^\d+\. (.+)$/gm, (_, p) => `<div class="step-row"><div class="step-num">•</div><div>${p}</div></div>`)
+    .replace(/^[-•] (.+)$/gm, '<div class="checklist-item">$1</div>')
+    .replace(/\n{2,}/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function copyAll() {
+  const active = document.querySelector('.tab-content.active');
+  if (active) {
+    navigator.clipboard.writeText(active.innerText).then(() => alert('✅ محتوا کپی شد!'));
+  }
+}
+</script>
 </body>
 </html>
